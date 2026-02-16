@@ -12,15 +12,15 @@
   "editor.cursorWidth": 3,
   "editor.cursorSmoothCaretAnimation": "on",
   "editor.fontSize": 16,
-  "editor.fontFamily": "Consolas, 'Courier New', monospace", // Змінив на стандартний, щоб не ламалось
-  "editor.hover.enabled": true, // УВІМКНУВ підказки (дуже раджу!)
+  "editor.fontFamily": "Consolas, 'Courier New', monospace", 
+  "editor.hover.enabled": "on", 
   "editor.snippetSuggestions": "top",
   "editor.smoothScrolling": true,
   "editor.minimap.enabled": true,
   "editor.stickyScroll.enabled": false,
   
   "files.autoSave": "afterDelay",
-  "files.autoSaveDelay": 1000, // Збільшив до 1 сек (радикально краще для LiveServer)
+  "files.autoSaveDelay": 1000, 
   
   "files.defaultLanguage": "html",
   "files.exclude": {
@@ -48,7 +48,7 @@
   "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "[javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
 
-  "workbench.colorTheme": "Gemini Dark", // Залишив тільки робочу тему
+  "workbench.colorTheme": "Gemini Dark", 
   
   "terminal.integrated.fontSize": 15,
   "terminal.integrated.defaultProfile.windows": "Git Bash",
