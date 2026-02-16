@@ -1,0 +1,60 @@
+{
+  "workbench.startupEditor": "newUntitledFile",
+  "workbench.statusBar.visible": true,
+  "workbench.editor.tabSizing": "shrink",
+  "window.zoomLevel": 1,
+  
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.formatOnPaste": true,
+  "editor.wordWrap": "on",
+  "editor.cursorBlinking": "phase",
+  "editor.cursorWidth": 3,
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.fontSize": 16,
+  "editor.fontFamily": "Consolas, 'Courier New', monospace", // Змінив на стандартний, щоб не ламалось
+  "editor.hover.enabled": true, // УВІМКНУВ підказки (дуже раджу!)
+  "editor.snippetSuggestions": "top",
+  "editor.smoothScrolling": true,
+  "editor.minimap.enabled": true,
+  "editor.stickyScroll.enabled": false,
+  
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000, // Збільшив до 1 сек (радикально краще для LiveServer)
+  
+  "files.defaultLanguage": "html",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/dist": true
+  },
+  
+  "git.ignoreMissingGitWarning": true,
+  "git.openRepositoryInParentFolders": "never",
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+
+  "[html]": { "editor.defaultFormatter": "vscode.html-language-features" },
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[scss]": { "editor.defaultFormatter": "vscode.css-language-features" },
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  "workbench.colorTheme": "Gemini Dark", // Залишив тільки робочу тему
+  
+  "terminal.integrated.fontSize": 15,
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+
+  "emmet.triggerExpansionOnTab": true,
+  "path-intellisense.autoSlashAfterDirectory": true,
+  "path-intellisense.extensionOnImport": true,
+  "security.workspace.trust.untrustedFiles": "open"
+}
