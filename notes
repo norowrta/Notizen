@@ -1,76 +1,135 @@
-# Notizen
+import React, { useState, useEffect } from 'react';
+import './App.css'; // Не забудь створити стилі (див. нижче)
 
-1. Vorbereitung & Globale Variablen (Global Scope)
-Bibliothek einbinden: #include <Keypad.h> nutzen, um die Tasten-Matrix einfach anzusteuern.
+// Функція для створення чистого поля
+const createEmptyBoard = () => {
+  const board = [];
+  for (let y = 0; y < 10; y++) {
+    const row = [];
+    for (let x = 0; x < 10; x++) {
+      row.push({ x, y, hasShip: false, isHit: false });
+    }
+    board.push(row);
+  }
+  return board;
+};
 
-Tasten-Layout (Keymap): Ein 2D-Array (char hexaKeys[][]) erstellen, das die Tasten (0-9, A-D, *, #) abbildet.
+// Функція для рандомної розстановки кораблів (спрощена)
+const placeShipsRandomly = (board) => {
+  // Робимо глибоку копію, щоб не мутувати вхідні дані
+  const newBoard = board.map(row => row.map(cell => ({ ...cell })));
+  
+  // Просто ставимо 5 випадкових кораблів для прикладу
+  let shipsPlaced = 0;
+  while (shipsPlaced < 5) {
+    const y = Math.floor(Math.random() * 10);
+    const x = Math.floor(Math.random() * 10);
+    
+    if (!newBoard[y][x].hasShip) {
+      newBoard[y][x].hasShip = true;
+      shipsPlaced++;
+    }
+  }
+  return newBoard;
+};
 
-Pin-Belegung (Pinout):
+function App() {
+  // СТЕЙТ: Саме поле гри
+  const [board, setBoard] = useState(createEmptyBoard());
+  // СТЕЙТ: Лічильник ходів
+  const [shots, setShots] = useState(0);
+  // СТЕЙТ: Повідомлення про перемогу
+  const [gameOver, setGameOver] = useState(false);
 
-Pins für die RGB-LED definieren (PWM-Pins für Helligkeitssteuerung).
+  // useEffect (аналог componentDidMount) - запускається один раз при старті
+  useEffect(() => {
+    const initialBoard = createEmptyBoard();
+    const boardWithShips = placeShipsRandomly(initialBoard);
+    setBoard(boardWithShips);
+  }, []);
 
-Pins für Zeilen (Rows) und Spalten (Cols) des Keypads festlegen.
+  // Логіка пострілу
+  const handleShoot = (y, x) => {
+    if (gameOver) return; // Гра закінчена, не можна клікати
+    
+    // 1. Беремо поточний борд
+    const currentCell = board[y][x];
 
-Objekt-Initialisierung: Das Keypad-Objekt mit dem Layout und den Pins erstellen.
+    // 2. Якщо вже стріляли — ігноруємо
+    if (currentCell.isHit) return;
 
-Status-Variablen:
+    // 3. !ВАЖЛИВО! Робимо КОПІЮ борду (React Way)
+    // Ми не можемо просто написати board[y][x].isHit = true
+    const newBoard = board.map(row => 
+      row.map(cell => {
+        if (cell.y === y && cell.x === x) {
+          return { ...cell, isHit: true }; // Повертаємо оновлену клітинку
+        }
+        return cell; // Повертаємо стару клітинку
+      })
+    );
 
-int brightness: Speichert die aktuelle Helligkeit (Standard: 255).
+    // 4. Оновлюємо стейт
+    setBoard(newBoard);
+    setShots(shots + 1);
 
-String inputString: Ein Puffer für die Zahleneingabe (z.B. "1", "12", "125").
+    // 5. Перевірка на влучання
+    if (newBoard[y][x].hasShip) {
+      console.log("Влучив!");
+      checkWinCondition(newBoard);
+    } else {
+      console.log("Промах!");
+    }
+  };
 
-2. Setup-Funktion (void setup)
-Pin-Modi: Die LED-Pins als OUTPUT definieren.
+  const checkWinCondition = (currentBoard) => {
+    // Перевіряємо, чи залишились кораблі
+    // flat() перетворює [[],[]] в []
+    const hasShipsLeft = currentBoard.flat().some(cell => cell.hasShip && !cell.isHit);
+    
+    if (!hasShipsLeft) {
+      setGameOver(true);
+      alert(`Перемога! Ти впорався за ${shots + 1} пострілів.`);
+    }
+  };
 
-Serielle Kommunikation: Serial.begin(9600) starten, um Ausgaben am Monitor zu sehen (Debugging).
+  const restartGame = () => {
+    const newBoard = placeShipsRandomly(createEmptyBoard());
+    setBoard(newBoard);
+    setShots(0);
+    setGameOver(false);
+  };
 
-Initialisierung: LEDs einmalig beim Start einschalten (optional).
+  return (
+    <div className="game-container">
+      <h1>Морський Бій (React)</h1>
+      <p>Пострілів: {shots}</p>
+      
+      <div className="board">
+        {/* Рендеримо рядки */}
+        {board.map((row, y) => (
+          <div key={y} className="row">
+            {/* Рендеримо клітинки */}
+            {row.map((cell, x) => (
+              <div 
+                key={`${y}-${x}`} 
+                className={`cell 
+                  ${cell.isHit && cell.hasShip ? 'hit' : ''} 
+                  ${cell.isHit && !cell.hasShip ? 'miss' : ''}
+                `}
+                onClick={() => handleShoot(y, x)}
+              >
+                {cell.isHit && cell.hasShip && "❌"}
+                {cell.isHit && !cell.hasShip && "•"}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
 
-3. Hauptschleife (void loop)
-Schritt 1: Eingabe lesen
+      {gameOver && <button onClick={restartGame}>Грати знову</button>}
+    </div>
+  );
+}
 
-customKeypad.getKey() aufrufen und das Ergebnis in einer Variable (char customKey) speichern.
-
-Schritt 2: Prüfung auf Tastendruck
-
-if (customKey): Der folgende Code wird nur ausgeführt, wenn tatsächlich eine Taste gedrückt wurde (nicht NO_KEY).
-
-Schritt 3: Modus-Auswahl (Farbe ändern)
-
-Verwendung von switch (customKey) für die Steuerung der Farben:
-
-Case 'A': Roten Kanal aktivieren (mit aktueller Helligkeit), andere ausschalten.
-
-Case 'B': Grünen Kanal aktivieren.
-
-Case 'C': Blauen Kanal aktivieren.
-
-Wichtig: break; nicht vergessen, um den Switch-Block zu verlassen.
-
-Schritt 4: Zahleneingabe (Helligkeit wählen)
-
-if (isDigit(customKey)): Prüfen, ob die Taste eine Ziffer (0-9) ist.
-
-Aktion: Die Ziffer an den inputString anhängen (konkatenieren).
-
-Feedback: Den aktuellen String im Serial Monitor ausgeben.
-
-Schritt 5: Bestätigen / Enter ('#')
-
-else if (customKey == '#'): Die Raute-Taste dient als Enter-Taste.
-
-Validierung: Prüfen, ob inputString nicht leer ist.
-
-Konvertierung: Den String in eine Ganzzahl umwandeln (.toInt()).
-
-Begrenzung (Clamping): Sicherstellen, dass der Wert zwischen 0 und 255 liegt (if > 255 then 255).
-
-Zuweisung: Den Wert in die globale Variable brightness speichern.
-
-Reset: Den inputString leeren, um bereit für die nächste Eingabe zu sein.
-
-Schritt 6: Löschen / Reset ('*')
-
-else if (customKey == '*'): Die Stern-Taste dient zum Korrigieren.
-
-Aktion: Den inputString komplett leeren (""), falls man sich vertippt hat.
+export default App;
