@@ -1,0 +1,40 @@
+// Твій існуючий код збереження кораблів...
+    setShipsState((prevShips) =>
+      prevShips.map((ship) => {
+        if (ship.name === shipName) {
+          return {
+            ...ship,
+            placed: true,
+            coordinates: newCoordinates,
+          };
+        }
+        return ship;
+      }),
+    );
+
+    // --- ДОДАЙ ЦЕЙ КОД ---
+    // Оновлюємо головне поле (board)
+    setBoard((prevBoard) =>
+      prevBoard.map((cell) => {
+        // 1. Перевіряємо, чи є ця клітинка новим місцем для нашого корабля
+        const isNewCell = newCoordinates.includes(cell.id);
+
+        // 2. Перевіряємо, чи була ця клітинка СТАРИМ місцем цього ж корабля
+        // (Це дуже важливо на майбутнє, якщо ти захочеш дати можливість 
+        // перетягувати кораблі, які вже стоять на полі, на інше місце)
+        const isOldCell = currentShip.placed && currentShip.coordinates.includes(cell.id);
+
+        if (isNewCell) {
+          // Записуємо корабель у клітинку
+          return { ...cell, hasShip: true, status: "ship" };
+        } else if (isOldCell) {
+          // Звільняємо стару клітинку
+          return { ...cell, hasShip: false, status: "empty" };
+        }
+
+        // Всі інші клітинки залишаємо без змін
+        return cell;
+      })
+    );
+    // --- КІНЕЦЬ НОВОГО КОДУ ---
+  } // Кінець функції handleDragEnd
